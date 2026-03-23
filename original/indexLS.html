@@ -1,0 +1,1390 @@
+﻿<!doctype html>
+<html lang="it" class="font-inter">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Valutazione Competenze – Modale Livelli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .transition-all {
+            transition: all .25s ease;
+        }
+
+        .competence-toggle:checked + .block {
+            background-color: #3b82f6;
+        }
+
+        .competence-toggle:checked ~ .dot {
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+
+    <!-- HEADER -->
+    <header class="bg-blue-700 text-white flex items-center justify-between px-6 py-4 shadow">
+        <div class="flex items-center space-x-4">
+            <h1 class="text-2xl font-semibold">Valutazione Competenze</h1>
+            <span id="badgeReparto" class="text-sm px-2 py-1 bg-blue-800/30 rounded hidden"></span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="text-sm bg-white/10 px-3 py-1 rounded hover:bg-white/20">
+                <button onclick="location.href='survey_vbhc_infermieri_sala_operatoria_html.html'"
+                        class="bg-blue-600 px-3 py-2 rounded text-white">
+                    VBHC
+                </button>
+            </div>
+
+            <button id="btnLivelli" class="bg-sky-400 text-white px-2 py-2 rounded hover:bg-sky-600 transition">
+                Clinical Competence
+            </button>
+
+            <button id="btnAddNurseLeft" class="bg-green-600 text-white px-2 py-2 rounded">
+                ➕ Aggiungi infermiere
+            </button>
+
+            <button id="btnExportAll" class="bg-gray-200 text-black px-3 py-2 rounded">
+                Esporta tutti (JSON)
+            </button>
+
+            <button id="btnClearAll" class="bg-red-100 text-red-700 px-3 py-2 rounded">
+                Svuota dati (test)
+            </button>
+
+            <input type="file" id="csvImport" accept=".csv" class="border p-2 rounded">
+        </div>
+    </header>
+
+    <div class="flex min-h-[calc(100vh-64px)]">
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg p-5 flex flex-col">
+            <h2 class="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-300">UNITÀ OPERATIVE</h2>
+            <nav class="space-y-3">
+                <button class="reparto-btn flex items-center gap-3 w-full text-left px-3 py-2 rounded bg-blue-100 dark:bg-blue-900"
+                        data-reparto="Chirurgia Generale">
+                    🏥 <span>Chirurgie Generali</span>
+                </button>
+                <button class="reparto-btn flex items-center gap-3 w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                        data-reparto="Chirurgie Specialistiche">
+                    ⚕️ <span>Chirurgie Specialistiche</span>
+                </button>
+                <button class="reparto-btn flex items-center gap-3 w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                        data-reparto="Day Surgery Oculistica">
+                    👁️ <span>Day Surgery Oculistica</span>
+                </button>
+            </nav>
+
+            <div class="space-x-3 mt-4">
+                <button onclick="location.href='report.html'"
+                        class="bg-red-600 px-3 py-2 rounded text-white">
+                    Report
+                </button>
+            </div>
+
+            <div class="mt-auto text-xs text-center text-gray-500 dark:text-gray-400">
+                © 2025 Valutazione Competenze – Sistema Formativo
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="flex-1 p-8 space-y-6 overflow-y-auto">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-semibold text-blue-700 dark:text-blue-300">
+                    Scheda – <span id="currentReparto">Chirurgia Generale</span>
+                </h2>
+                <div class="flex items-center gap-2">
+                    <button id="btnStart" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        Inizia valutazione
+                    </button>
+                    <button id="btnSaveEval" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        Salva valutazione
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- CARD INFERMIERE -->
+                <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md lg:col-span-1">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-300">Infermiere</h3>
+                        <div class="flex gap-2">
+                            <button id="btnEditNurse" class="hidden bg-yellow-500 text-white px-3 py-1 rounded">Modifica</button>
+                            <button id="btnDeleteNurse" class="hidden bg-red-500 text-white px-3 py-1 rounded">Elimina</button>
+                        </div>
+                    </div>
+                    <div id="nurseCard" class="text-sm text-gray-600 dark:text-gray-300">
+                        Nessun infermiere selezionato
+                    </div>
+                </section>
+
+                <!-- RIEPILOGO LIVELLO COMPLESSIVO -->
+                <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md lg:row-span-2 lg:col-span-2">
+                    <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-300 mb-2">Riepilogo Valutazione</h3>
+                    <p class="text-sm text-gray-500 mb-4">
+                        Utilizza il pulsante <b>“Clinical Competence”</b> per aprire la modale,
+                        attiva le competenze e seleziona il livello (1-4). Qui vedi il livello complessivo.
+                    </p>
+
+                    <div class="mt-4 border-t pt-3 space-y-1">
+                        <p id="summaryLevel" class="text-lg font-semibold">
+                            Livello complessivo: -
+                        </p>
+                        <p id="summaryScore" class="text-sm text-gray-500">
+                            Punteggio totale: 0
+                        </p>
+                    </div>
+
+                    <div id="summaryDetails"
+                         class="mt-6 border-t pt-4 space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                        <!-- Dettaglio sezioni -->
+                    </div>
+                </section>
+
+                <!-- RADAR -->
+                <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md lg:col-span-1">
+                    <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-300 mb-4">Grafico Radar</h3>
+                    <canvas id="radarChart" class="w-full h-64"></canvas>
+                    <div class="mt-4 space-y-2">
+                        <button id="btnExportJSON" class="w-full bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded">
+                            Esporta valutazione (JSON)
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TABELLA INFERMIERI -->
+            <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-300 mb-4">Elenco Infermieri</h3>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm border rounded overflow-hidden">
+                        <thead class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            <tr>
+                                <th class="px-3 py-2 text-left">Nome</th>
+                                <th class="px-3 py-2 text-left">Cognome</th>
+                                <th class="px-3 py-2 text-left">Ruolo / Competenza</th>
+                                <th class="px-3 py-2 text-left">Specialità</th>
+                                <th class="px-3 py-2 text-left">Anni servizio</th>
+                                <th class="px-3 py-2 text-left">Interventi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nursesList" class="divide-y dark:divide-gray-700"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODALE INFERMIERE -->
+    <div id="modalNurse" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-96 shadow-lg">
+            <h3 id="modalTitle" class="text-xl font-semibold mb-4 text-blue-700 dark:text-blue-300">
+                Aggiungi Infermiere
+            </h3>
+
+            <div class="space-y-2">
+                <input id="inputNome" class="w-full p-2 border rounded" placeholder="Nome">
+                <input id="inputCognome" class="w-full p-2 border rounded" placeholder="Cognome">
+                <input id="inputEsperienza" type="number" min="0" class="w-full p-2 border rounded" placeholder="Esperienza (anni)">
+                <input id="inputMatricola" class="w-full p-2 border rounded" placeholder="Matricola">
+                <input id="inputRuolo" class="w-full p-2 border rounded" placeholder="Ruolo">
+                <input id="inputReparto" class="w-full p-2 border rounded" placeholder="Reparto">
+                <input id="inputValutatore" class="w-full p-2 border rounded" placeholder="Valutatore">
+            </div>
+
+            <div class="mt-5 flex justify-end gap-2">
+                <button id="modalCancel" class="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded">
+                    Annulla
+                </button>
+                <button id="modalSave" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded">
+                    Salva
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE COMPETENZE -->
+    <div id="competenceModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center hidden">
+        <div id="modalContentContainer" class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
+                <h2 class="text-xl font-bold text-blue-700 dark:text-blue-300">
+                    Valutazione Dettagliata – Livelli di Riferimento
+                </h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="modalBody" class="p-6 overflow-y-auto flex-grow space-y-4">
+                <p id="instructions" class="text-sm text-gray-500">
+                    Premi <b>Inizia valutazione</b> per abilitare le sezioni, poi attiva le competenze
+                    tramite gli switch e seleziona il livello (1-4) per ogni domanda.
+                </p>
+
+                <div id="competenceContainer" class="space-y-4 opacity-50 pointer-events-none max-h-[60vh] overflow-y-auto border-t pt-4"></div>
+
+                <div class="mt-4 border-t pt-4">
+                    <h3 class="text-md font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                        Dettaglio Livelli per Competenza
+                    </h3>
+                    <div id="detailedLevels" class="space-y-3 text-sm"></div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 sticky bottom-0 bg-white dark:bg-gray-800 z-10 text-right">
+                <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-md">
+                    Chiudi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!--SCRIPT PRINCIPALE-->
+    <script>
+        function uid() {
+            return 'n_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        }
+
+        const STORAGE_KEY = 'valutazioni_dashboard_v2';
+
+        const LEVEL_MAP = {
+            1: '1 - Supervisione Diretta',
+            2: '2 - Supervisione Indiretta',
+            3: '3 - Professionista Autonomo',
+            4: '4 - Autonomo e Formatore'
+        };
+
+        function scoreToLevelText(score) {
+            const level = Math.ceil(score);
+            const clampedLevel = Math.min(4, Math.max(1, level));
+            return LEVEL_MAP[clampedLevel] || 'Livello non definito';
+        }
+
+        // COMPETENCE_DATA 
+        const COMPETENCE_DATA = {
+            "Chirurgia Generale": [
+                {
+                    key: 'Chirurgia Addominale',
+                    questions: [
+                        'LAPAROTOMIA ESPLORATIVA, ERNIOPLASTICA INGUINALE, ERNIOPLASTICA OMBELICALE, PLASTICA DI PARETE CON PROTESI',
+                        'LAPAROSCOPIA ESPLORATIVA, ERNIOPLASTICA INGUINALE, COLECISTECTOMIA, APPENDICECTOMIA, LPS DIAGNOSTICA CON O SENZA PIPAC, LPS DIAGNOSTICA CON O SENZA BIOPSIE',
+                        'CONFEZIONAMENTO ILEOSTOMIA, CONFEZIONAMENTO COLONSTOMIA, CONFEZIONAMENTO DIGIUNOSTOMIA, CHIUSURA ILEOSTOMIA, CHIUSURA COLONSTOMIA, RIPARAZIONE ERNIA IATALE',
+                        'APPENDICECTOMIA LAPAROTOMICA, COLECISTECTOMIA LAPAROTOMICA',
+                        'APPENDICECTOMIA LAPAROSCOPICA, COLECISTECTOMIA LAPAROSCOPICA',
+                        'FUNDOPLICATIO ROBOT ASSISTITA',
+                        'AMPUTAZIONE ADDOMINO - PERINEALE SEC MILES LAPAROTOMICA, ANASTOMOSI ILEO COLICA LAPAROTOMICA, ANASTOMOSI COLO COLICA LAPAROTOMICA, EMICOLECTOMIA DX LAPAROTOMICA, EMICOLECTOMIA SIN LAPAROTOMICA, RESEZIONE ANTERIORE DEL RETTO LAPAROTOMICA, RESEZIONE SEGMENTARIA MULTIPLA INTESTINALE LAPAROTOMICA, RESEZIONE DEL SIGMA LAPAROTOMICA, RESEZIONE TENUALE LAPAROTOMICA, RICANALIZZAZIONE COLO - RETTALE POST HARTAMANN SENZA RESEZIONE LAPAROTOMICA, RESEZIONE ILEALE LAPAROTOMICA, RESEZIONE COLON TRASVERSO LAPAROTOMICA, RESEZIONE DEL SIGMA RETTO LAPAROTOMICA, GASTRECTOMIA SUBTOTALE / TOTALE LAPAROTOMICA',
+                        'AMPUTAZIONE ADDOMINO - PERINEALE SEC MILES LPS, ANASTOMOSI ILEO COLICA LPS, ANASTOMOSI COLO COLICA LPS, EMICOLECTOMIA DX LPS, EMICOLECTOMIA SIN LPS, RESEZIONE ANTERIORE DEL RETTO, RESEZIONE SEGMENTARIA MULTIPLA INTESTINALE, RESEZIONE DEL SIGMA LPS, RESEZIONE TENUALE LPS, RICANALIZZAZIONE COLO - RETTALE POST HARTAMANN SENZA RESEZIONE LPS, RESEZIONE ILEALE LPS, RESEZIONE COLON TRASVERSO LPS, RESEZIONE DEL SIGMA RETTO LPS, GASTRECTOMIA SUBTOTALE / TOTALE LPS',
+                        'RESEZIONE ANTERIORE DEL RETTO ROBOT ASSISTITA, SPLENOPANCREASECTOMIA DISTALE ROBOT ASSISTITA, EMICOLECTOMIA DX ROBOT ASSISTITA, EMICOLECTOMIA SIN ROBOT ASSISTITA',
+                        'SPLENECTOMIA, SPLENOPANCREASECTOMIA DISTALE LAPAROTOMICA',
+                        'SPLENECTOMIA, SPLENOPANCREASECTOMIA DISTALE LAPAROSCOPICA',
+                        'SPLENOPANCREASECTOMIA DISTALE ROBOT ASSISTITA',
+                        'PERITONECTOMIA SELETTIVA CON O SENZA HIPEC, CITORIDUZIONE CON O SENZA HIPEC',
+                        'TATME (TRANSANAL TOTAL MESORECTAL EXCISION) LAPAROSCOPICO',
+                        'DUODENOCEFALOPANCREASECTOMIA',
+                        'DUODENOCEFALOPANCREASECTOMIA ROBOT ASSISTITA',
+                        'ESOFAGECTOMIA'
+                    ]
+                },
+                {
+                    key: 'Chirurgia Vascolare',
+                    questions: [
+                        'LEGATURA E STRIPPING DI VENE DELL’ARTO INFERIORE',
+                        'AMPUTAZIONE RAGGIO DEL PIEDE, AMPUTAZIONE SOTTO IL GINOCCHIO',
+                        'ENDOARTERIECTOMIA DELLA BIFORCAZIONE CAROTIDEA, ASPORTAZIONE DI PARAGANGLIOMA CAROTIDEO, ENDOARTERIECTOMIA DEL TRIPODE FEMORALE',
+                        'ANGIOPLASTICA ARTERIA FEMORALE, ANGIOPLASTICA ARTERIA ILIACA, ANGIOPLASTICA ARTERIA POPLITEA, ANGIOPLASTICA ARTERIA SUCCLAVIA, ANGIOPLASTICA CAROTIDEA CON INSERIZIONE DI STENT, ANGIOPLASTICA E STENT ARTERIA FEMORALE, ANGIOPLASTICA E STENT ARTERIA ILIACA, ANGIOPLASTICA E STENT ARTERIA POPLITEA, ANGIOPLASTICA E STENT IN VASO PERIFERICO, ANGIOPLASTICA VASI ADDOMINALI, ARTERIOGRAFIA, ESCLUSIONE ENDOVASCOLARE DELL’AORTA TORACICA, ESCLUSIONE ENDOVASCOLARE DELL’ARCO AORTICO, ESCLUSIONE ENDOVASCOLARE DI ANEURISMA DELL’AORTA ADDOMINALE SOTTORENALE, ESCLUSIONE ENDOVASCOLARE DI ANEURISMA DELL’AORTA ADDOMINALE SOPRARENALE',
+                        'BY PASS AORTO RENALE, INNESTO AORTO BISILIACO, BY PASS AORTO - ILIACO BIFEMORALE, INNESTO AORTO AORTICO SOPRARENALE CON PERFUSIONE IPOTERMICA ARTERIE RENALI, BY PASS FEMORO FEMORALE, BY PASS AXILLO BIFEMORALE, BYPASS AORTO - ILIACO MESENTERICO, BY PASS FEMORO POPLITEO SOTTOGENICOLARE IN SAFENA, RESEZIONE VASCOLARE ADDOMINALE ARTERIOSA, BY PASS CAROTIDEO SUCCLAVIO, BY PASS FEMORO POPLITEO SOTTOGENICOLARE IN PROTESI, BY PASS AORTO ILIACO BIFEMORALE, INNESTO AORTO BISILIACO',
+                        'INNESTO AORTO AORTICO TORACO - ADDOMINALE'
+                    ]
+                },
+                {
+                    key: 'Chirurgia Endocrino e Metabolica',
+                    questions: [
+                        'LOBOISTMECTOMIA TIROIDEA, TIROIDECTOMIA TOTALE, TIROIDECTOMIA TOTALE + LINFOADENECTOMIA DEL COMPARTIMENTO CENTRALE, PARATIROIDECTOMIAEMI, TIROIDECTOMIA TOTALE + LINFOADENECTOMIA LATERO CERVICALE',
+                        'TIROIDECTOMIA ROBOT ASSISTITA',
+                        'SLEEVE GASTRECTOMY LAPAROTOMICA, SADIS LAPAROTOMICA, BYPASS GASTRICO LAPAROTOMICO',
+                        'SLEEVE GASTRECTOMY LPS, SADIS LPS, BYPASS GASTRICO LPS, MINI - BYPASS GASTRICO LPS, REVISIONE DI DIVERSIONE BILIO - PANCREATICA LPS',
+                        'SLEEVE GASTRECTOMY ROBOT ASSISTITA, SADIS ROBOT ASSISTITA, BYPASS GASTRICO ROBOT ASSISTITA',
+                        'SURRENECTOMIA LAPAROTOMICA',
+                        'SURRENECTOMIA ROBOT ASSISTITA'
+                    ]
+                },
+                {
+                    key: 'Chirurgia EpatoBiliare',
+                    questions: [
+                        'FENESTRAZIONE DI CISTI EPATICA LPS',
+                        'RESEZIONI EPATICHE LIMITATE LPT, SEGMENTECTOMIA EPATICA / BISEGMENTECTOMIA EPATICA ANATOMICHE SETTORIALI LPT',
+                        'RESEZIONI EPATICHE LIMITATE LPS, SEGMENTECTOMIA EPATICA / BISEGMENTECTOMIA EPATICA ANATOMICHE SETTORIALI LPS',
+                        'RESEZIONI EPATICHE LIMITATE ROBOT ASSISTITA, SEGMENTECTOMIA EPATICA / BISEGMENTECTOMIA EPATICA ANATOMICHE SETTORIALI ROBOT ASSISTITA',
+                        'EPATETOMIA SINISTRA / DX LPT, MESOEPATECTOMIA LPT, TWO STAGE EPATECTOMY LPT, ALPPS LPT',
+                        'EPATETOMIA SINISTRA / DX LPS, MESOEPATECTOMIA LPS, TWO STAGE EPATECTOMY LPS, ALPPS LPS',
+                        'EPATETOMIA SINISTRA / DX ROBOT ASSISTITA, MESOEPATECTOMIA ROBOT ASSISTITA'
+                    ]
+                },
+                {
+                    key: 'Chirurgia Toracica',
+                    questions: [
+                        'TORACOTOMIA ESPLORATIVA, BIOPSIE PLEURICHE, BIOPSIE LINFONODALI, PLASTICA DI ERNIA DIAFRAMMATICA, ASPORTAZIONE DI LESIONE DELLA PARETE TORACICA',
+                        'SIMPATICOFRASSI, TORACOSCOPIA ESPLORATIVA, BIOPSIE PLEURICHE TORACOSCOPICHE',
+                        'RESEZIONE POLMONARE ATIPICA TORACOTOMICA, LOBECTOMIA POLMONARE TORACOTOMICA, BILOBECTOMIA POLMONARE TORACOTOMICA, APICECTOMIA POLMONARE TORACOTOMICA, SEGMENTECTOMIA POLMONARE TORACOTOMICA, PNEUMECTOMIA TORACOTOMICA',
+                        'RESEZIONE POLMONARE ATIPICA TORACOSCOPICA, LOBECTOMIA POLMONARE TORACOSCOPICA, BILOBECTOMIA POLMONARE TORACOSCOPICA, APICECTOMIA POLMONARE TORACOSCOPICA, SEGMENTECTOMIA POLMONARE TORACOSCOPICA',
+                        'SEGMENTECTOMIA / LOBECTOMIA POLMONARE ROBOT ASSISTITA',
+                        'TIMECTOMIA STERNOTOMICA',
+                        'TIMECTOMIA ROBOT ASSISTITA'
+                    ]
+                },
+                {
+                    key: 'Chirurgia Trapianti', questions: [
+                        'TX DI RENE DA VIVENTE / MORTE',
+                        'TX DI FEGATO'
+                    ]
+                },
+                {
+                    key: 'Chirurgia Urologia',
+                    questions: [
+                        'TURV, TURP',
+                        'URETEROSCOPIA (RIRS, ULT, PCNL)',
+                        'ASPORTAZIONE IDROCELE, ASPORTAZIONE O DEMOLIZIONE DI LESIONE DEL PENE, BIOPSIA PENE, BIOPSIA PROSTATICA, CATETERIZZAZIONE URETERALE, CIRCONCISIONE, CORPOROPLASTICA PENIENA, INCISIONE E DRENAGGIO SCROTO E TUNICA VAGINALE, BIOPSIA TRANSPERINEALE DELLA PROSTATA, ORCHIECTOMIA MONOLATERALE / BILATERALE',
+                        'PIELOPLASTICA, REIMPIANTO URETERE ACQUISITO, RESEZIONE TRANSURETRALE LESIONE VESCICALE O NEOPLASIA, SOSPENSIONE URETRALE SOVRAPUBICA CON SLING',
+                        'CISTECTOMIA LAPAROTOMICA',
+                        'NEFRECTOMIA PARZIALE / RADICALE LAPAROTOMICA, ENUCLEORESEZIONE RENALE LAPAROTOMICA',
+                        'NEFRECTOMIA PARZIALE / RADICALE LPS, ENUCLEORESEZIONE RENALE LPS, NEFROURETERECTOMIA LPS',
+                        'NEFRECTOMIA PARZIALE / RADICALE ROBOT ASSISTITA, ENUCLEORESEZIONE RENALE ROBOT ASSISTITA, NEFROURETERECTOMIA ROBOT ASSISTITA',
+                        'PROSTATECTOMIA LAPAROTOMICA',
+                        'PROSTATECTOMIA ROBOT ASSISTITA'
+                    ]
+                },
+                {
+                    key: 'Chirurgia Pediatrica',
+                    questions: [
+                        'CHIUSURA DI COLOSTOMIA CON RESEZIONE E ANASTOMOSI, CHIUSURA DI ILEOSTOMIA CON RESEZIONE E ANASTOMOSI',
+                        'LPS ESPLORATIVA, APPENDICECTOMIA LAPAROSCOPICA',
+                        'PLASTICA DI ERNIA INGUINALE, CHIUSURA DEL DOTTO PERITONEO - VAGINALE, CIRCONCISIONE, ASPORTAZIONE DI IDROCELE, ASPORTAZIONE DI VARICOCELE, ORCHIOPESSI MONOLATERALE / BILATERALE, RIPARAZIONE DI IPOSPADIA, BIOPSIA DI LINFONODI',
+                        'CISTOSCOPIA, PIELOPLASTICA, CHIUSURA DI FISTOLA URETRALE',
+                        'ESOFAGO - ESOFAGOSTOMIA INTRATORACICA'
+                    ]
+                }
+            ],
+
+            "Chirurgie Specialistiche": [
+                {
+                    key: 'Ch. Senologica', questions: [
+                        'Biopsia del linfonodo sentinella, escissione nodulo mammario, quadrantectomia mammaria',
+                        'Mastectomia semplice/radicale monolaterale/bilaterale, linfoadenectomia ascellare monolaterale/bilaterale',
+                        'Quadrantectomia mammaria con mastoplastica riduttiva, mastectomia nipple sparing or skin sparing/reducing monolaterale/bilaterale'
+                    ]
+                },
+                {
+                    key: 'Ch. plastica', questions: [
+                        'Asportazione radicale di lesione della cute, allargamento cicatrice chirurgia pregresso melanoma e biopsia del linfonodo sentinella',
+                        'Liposuzione in esiti chirurgia bariatrica e della mammella, lifting braccia-addome e cosce, rimozione protesi della mammella, inserzione di espansore tissutale della mammella mono/bilaterale',
+                        'Asportazione neoformazioni cutanee estese con innesto lembo di scorrimento',
+                        'Mastopessi/mastoplastica riduttiva mono-bilaterale, ricostruzione mammaria con protesi mono/bilaterale',
+                        'Anastomosi venolinfatiche per linfedema arto inferiore/superiore, lembo microchirurgico/peduncolato per ricostruzione mammaria, ricostruzione con innesto cutaneo/lembo locale a distanza-microvascolare del perineo e della vulva'
+                    ]
+                },
+                {
+                    key: 'Ortopedia e Traumatologia',
+                    questions: [
+                        'CHIRURGIA OMERO frattura, pseudoartrosi, neoformazione, infezioni osteo-articolari: sintesi percutanea con fissatore esterno, sintesi con placca e viti/chiodo endomidollare, osteotomia, rimozione mezzi di sintesi, biopsia percutanea/open e asportazione neoformazioni muscolo-scheletriche, innesti ossei, amputazione, impianto spaziatore',
+                        'CHIRURGIA RADIO/ULNA (frattura, pseudoartrosi, neoformazione, lussazione): sintesi percutanea con fissatore esterno, sintesi con placca e viti/chiodo endomidollare, osteotomia, rimozione mezzi di sintesi, biopsia percutanea/open e asportazione neoformazioni muscolo-scheletriche, innesti ossei, amputazione, riduzione incruenta',
+                        'CHIRURGIA GOMITO (frattura, lussazione): artrolisi artroscopica, sintesi, protesi totale',
+                        'CHIRURGIA MANO/PIEDE (frattura, neoformazione, lussazione): amputazione, correzione dita, rimozione mezzi di sintesi, biopsia e asportazione neoformazione, revisione, sintesi con placche e viti/fili di k, osteotomia, rimozione corpi estranei, innesti ossei, neurolisi e tenolisi.',
+                        'CHIRURGIA SPALLA Endoprotesi e artroprotesi totale, artroscopia per sinovialectomia -artrolisi-lesione cuffie rotatori',
+                        'CHIRURGIA SCAPOLA/CLAVICOLA sintesi con placca e viti, biopsia, rimozione mezzi di sintesi, osteotomia',
+                        'CHIRURGIA COSTE/STERNO biopsia open/percutanea',
+                        'CHIRURGIA BACINO sintesi percutanea e/o con fissatore esterno, sintesi con placche e viti, biopsia open/percutanea, rimozione mezzi di sintesi',
+                        'CHIRURGIA ANCA (frattura, coxartrosi, lussazione, neoformazione): endoprotesi, artroprotesi totale, innesti ossei, revisione, impianto e rimozione spaziatore',
+                        'CHIRURGIA FEMORE (frattura, neoformazione, infezione): sintesi con placca e viti/ chiodo endomidollare, sintesi percutanea con fissatore esterno, rimozione mezzi di sintesi, innesti ossei, impianto e rimozione spaziatore, allungamento',
+                        'CHIRURGIA GINOCCHIO riduzione incruenta, protesi totale/gonartrosi primaria e secondaria, artroscopia per artrolisi-sinovialectomia-sutura meniscale-meniscectomia, rimozione e impianto spaziatore, revisione, amputazione, ricostruzione legamento crociato anteriore, artroscopia/open del legamento collaterale del ginocchio e crociato anteriore.',
+                        'CHIRURGIA TIBIA/PERONE (frattura, pseudoartrosi, neoformazioni, infezioni osteo-articolari) allungamento con innesto osseo/fissatore esterno, sintesi con placca e viti/chiodo endomidollare, sintesi percutanea con fissatore esterno, biopsia percutanea/open, osteotomia, rimozione mezzi di sintesi, innesti ossei, toilette chirurgica, impianto e rimozione spaziatore',
+                        'CHIRURGIA TESSUTI MOLLI/TENDINI E ARTICOLAZIONI fasciotomia per sdr compartimentale, riparazione e innesti tendinei e della cartilagine articolare, tenorrafia, decompressione, toilette ferita chirurgica',
+                    ]
+                },
+                {
+                    key: 'Chirurgia Vertebrale',
+                    questions: [
+                        'CHIRURGIA VERTEBRALE BASE biopsia percutanea/open, cifoplastica vertebroplastica, microdiscectomia',
+                        'CHIRURGIA VERTEBRALE MEDIA decompressione del canale vertebrale/radicolare, rimozione di mezzi di sintesi, trazione cervicale con applicazione di Halo',
+                        'CHIRURGIA VERTEBRALE ELEVATA artrodesi: cervicale anteriore/posteriore, dorsale e dorso-lombare con/senza cage open/percutaneo, lombare anterolaterale (XLIF) e posteriore open/percutaneo, lombare anteriore (ALIF) e posteriore percutanea/open',
+                    ]
+                },
+                {
+                    key: 'Neurochirurgia',
+                    questions: [
+                        'CHIRURGIA DELL/IDROCEFALO: derivazioni lombo-peritoneali, ventricolo-atriali, ventricolo-peritoneali, derivazione ventricolare esterna',
+                        'REVISIONE E RIMOZIONE SISTEMA DI DERIVAZIONE LIQUORALE: VENTRICOLO-PERITONEALE, SPINO-PERITONEALE.',
+                        'CHIRURGIA ENDOSCOPICA CEREBRALE: TERZOVENTRICOLOSTOMIA ENDOSCOPICA, VENTRICOLOSTOMIA ENDOSCOPICA.',
+                        'CHIRURGIA TRAUMATOLOGICA: EVACUAZIONE MONOLATERALE E BILATERALE DI EMATOMA SOTTODURALE, EMATOMA SUBDURALE, CRANIOTOMIA CON EVACUAZIONE DI EMATOMA SOTTODURALE.',
+                        'INTERVENTI CHIRURGICI SU LESIONI DELLA BASE CRANICA: ASPORTAZIONE LESIONE SELLARE PER VIA ENDOSCOPICA, RIPARAZIONE FISTOLA LIQUORALE PER VIA TRASFENOIDALE ENDOSCOPICA',
+                        'CHIRURGIA DEI NERVI PERIFERICI: NEUROLISI TUNNEL CARPALE, NEUROLISI TUNNEL CUBITALE.',
+                        'NEUROCHIRURGIA FUNZIONALE: DEEP BRAIN STIMULATION (DBS)',
+                        'NEUROCHIRURGIA FUNZIONALE: IMPIANTO/REVISIONE/SOSTITUZIONE ELETTRODO E GENERATORE PER STIMOLAZIONE NERVO VAGO.',
+                        'NEUROCHIRURGIA FUNZIONALE: IMPIANTO/REVISIONE/SOSTITUZIONE ELETTRODO E GENERATORE PER STIMOLAZIONE MIDOLLARE (SCS).',
+                        'NEUROCHIRURGIA FUNZIONALE: IMPIANTO DI SISTEMA DI INFUSIONE INTRATECALE.',
+                        'INTERVENTI CHIRURGICI SULLA COLONNA VERTEBRALE: ERNIE DISCALI LOMBARI-CERVICALI, STENOSI DELLA COLONNA CERVICALE-LOMBARE, STABILIZZAZIONI.',
+                        'INTERVENTI CHIRURGICI CRANICI MAGGIORI: TUMORALI, VASCOLARI, TRAUMATICI, MALFORMATIVI.',
+                        'CHIRURGIA VASCOLARE CEREBRALE: CLIPPING DI ANEURISMA CEREBRALE, MALFORMAZIONI ARTERO-VENOSE (MAV)',
+                        'CHIRURGIA DELLA RIVASCOLARIZZAZIONE CEREBRALE: BYPASS CEREBRALE EXTRACRANICO-INTRACRANICO',
+                        'CRANIOPLASTICA: CUSTOM MADE, OSSO AUTOLOGO',
+                        'INTERVENTI CHIRURGICI PER NEVRALGIA TRIGEMINALE: COMPRESSIONE PERCUTANEA CON PALLONCINO DEL GANGLIO DEL GASSER, DECOMPRESSIONE TRIGEMINALE CON CRANIOTOMIA',
+                        'INTERVENTO CHIRURGICO PER CORREZIONE MALFORMAZIONE DI CHIARI OSSO E OSSO-TONSILLE CEREBELLARI (NEUROCHIRURGIA INFANTILE)',
+                        'CRANIOPLASTICA ESPANSIVA-RICOSTRUTTIVA: BIPARIETALE, OCCIPITALE, FRONTO-ORBITARIA (NEUROCHIRURGIA INFANTILE)'
+                    ]
+                },
+                {
+                    key: 'Otorinolaringoiatria',
+                    questions: [
+                        'CAVO ORALE: adenotonsillectomia, aportazione neoformazione labbro, guancia, lingua e faringea. Uvulofaringopalatoplastica, asportazione corpo estraneo faringeo e laringeo, incisione ascesso tonsillare, marsupializzazione del dotto salivare e dell/ascesso parotideo. Scialoendoscopia, frenuloplastic linguale, riparazione fistola oroantrale e oronasale, asportazione neoformazione del palato duro ,asporazione di ranula sotto liguale e gengivale. MicroLaringoscopia ',
+                        'NASO: RIMOZIONE CORPO ESTRANEO NARICE, RINOFARINGEO E DEL SENO MASCELLARE. SETTOPLASTICA, RINOSETTOPLASTICA, RIMOZIONE DI POLIPI ANTROCOANALE, TURBINECTOMIA E TURBINOTOMIA, EMOSTASI VARISI NASALI, EXENTERATIO ORBITARIE, CHIRURGIA DEI SENI PARANASALI E DELL’ORBITA PER VIA ENDOSCOPICA, FRATTURA OSSA NASALI, ATRESIA COANALE, DACRIOCISTORINOSTOMIA.',
+                        'ORECCHIO: CHIUSURA FISTOLA OTO-LIQUORALE, MASTOIDECTOMIA, EXERESI COLESTEATOMA DELLA ROCCA, ATRESIA AURIS, LABIRINTECTOMIA, MEATOPLASTICA, MIRINGOPLASTICA, MIRINGOTOMIA, OSSICULOPLASTICA, TIMPANOPLASTICA DI TIPO I II III IV, RIMOZIONE CORPO ESTRANEO, STENOSI DEL CONDOTTO URICOLARE, TIMPANOPLASTICA, ASPORTAZIONE NEOFORMAZIONEE PADIGLIONE AURICOLARE.',
+                        'ORECCHIO AVANZATO: TIMPAMOPLASTICA DI TIPO V, PETROSECTOMIA, ASPORTAZIONE DI NEURINOMA DELL’ACUSTICO E ANGOLO PONTECEREBELLARE, IMPIANTO COCLEARE.',
+                        'COLLO: SVUOTAMENTO LATERO CERVICALE, ASPORATAZIONE DI NEOFORMZIONE ESTERNA DELLA CUTE, CERVICOTOMIA, PAROTIDECTOMIA, SCIALECTOMIA, INCISIONE E DRENAGGIO DI ASCESSO-FLEMMONE LATEROCERVICALE, LARINGECTOMIA PARZIALE E TOTALE, RICOSTRUZIONE DEL NERVO FACCIALE, TRACHEOTOMIA.',
+                        'GLOMO: CAROTIDEO, TIMPANICO - TIMPANICOGIUGULARE, LINFANGIOMA DEL COLLO, PARAGANGLIOMA CAROTIDEO. CONTROLLO EMOSTASI TONSILLARE.',
+                        'LEMBO: ASPORTAZIONE DEL LABBRO, DELLA GUANCIA, GLOSSECTOMIA CON RICOSTRUZIONE LEMBO LIBERO PEDUNCOLATO, PETTORALE E DEL MASSICCIO FACCIALE. MANDIBULECTOMIA CON RICOSTRUZIONE OSSO AUTOLOGO.',
+                        'LEMBO CON TECNICA DI LABBE’.',
+                        'OTOSCLEROSI, CORDECTOMIA E EMILARINGECTOMIA SOVRAGLOTTICA CON LASER AD ANIDRIDE CARBONICA.'
+                    ]
+                },
+                {
+                    key: 'Maxillo-Facciale',
+                    questions: [
+                        'CAVO ORALE:asportazione neoformazione lingua, palato duro, osteolitica mascellare, guancia e labbra. Fistola oro-nasoantrale',
+                        'MASCELLA: FRATTURA LE FORT I II III, MASCELLARE CON MEZZI DI SINTESI E CONDILO MANDIBOLARE. GENIOPLASTICA. CORREZIONE PROGENISMO.',
+                        'NASO: RINOSETTOPLASTOCA. RIDUZIONE FRATTURA OSSA NASALI. ANTROSTOMIA MASCELLARE.',
+                        'ORBITA: EXENTERATIO ORBITALE. RIDUZIONE FRATTURA ORBITARIA TRAUMATICA E ATRAUMATICA.',
+                        'COLLO: PAROTIDECTOMIA. CERVICOTOMIA. SVUOTAMENTO LATERO-CERVICALE. TRACHEOTOMIA.',
+                        'LEMBO: RESEZIONE MANDIBOLARE E GLOSSECTOMIA CON RICOSTRUZIONE LEMBO LIBERO E PEDUNCOLATO CON OSSO AUTOLOGO.'
+                    ]
+                }
+            ],
+
+            "Day Surgery Oculistica": [
+                {
+                    key: 'Cataratta',
+                    questions: [
+                        '13.72 - IMPIANTO SECONDARIO DI CRISTALLINO ARTIFICIALE',
+                        '13.41_2 - INTERVENTO DI CATARATTA CON O SENZA IMPIANTO DI LENTE INTRAOCULARE - OCCHIO DX',
+                        '13.72_3 - IMPIANTO SECONDARIO DI CRISTALLINO ARTIFICIALE - OCCHIO SX',
+                        '13.2 - ESTRAZIONE EXTRACAPSULARE DELLA CATARATTA CON TECNICA DI ESTRAZIONE LINEARE',
+                        '13.72 - IMPIANTO SECONDARIO DI CRISTALLINO ARTIFICIALE'
+                    ]
+                },
+                {
+                    key: 'Vitreo retina',
+                    questions: [
+                        '14.72 - ALTRA RIMOZIONE DEL CORPO VITREO',
+                        '14.41 - PIOMBAGGIO SCLERALE CON IMPIANTO',
+                        '14.74 - ALTRA VITRECTOMIA MECCANICA',
+                        '14.75 - INIEZIONE DI SOSTITUTI VITREALI'
+                    ]
+                },
+                {
+                    key: 'Glaucoma',
+                    questions: [
+                        '12.69 - ALTRI INTERVENTI DI FISTOLIZZAZIONE DELLA SCLERA',
+                        '12.89 - ALTRI INTERVENTI SULLA SCLERA',
+                        '12.64 - TRABECULECTOMIA AB EXTERNO',
+                        '12.83 - REVISIONE DI FERITA OPERATORIA DEL SEGMENTO ANTERIORE DELL/OCCHIO NON CLASSIFICATA ALTROVE'
+                    ]
+                },
+                {
+                    key: 'Palpebra',
+                    questions: [
+                        '08.24 - ASPORTAZIONE DI LESIONE ESTESA DELLA PALPEBRA, A TUTTO SPESSORE',
+                        '08.23 - ASPORTAZIONE DI LESIONE ESTESA DELLA PALPEBRA NON A TUTTO SPESSORE',
+                        '08.33 - CORREZIONE DI BLEFAROPTOSI CON RESEZIONE O AVANZAMENTO DEL MUSCOLO ELEVATORE O SUA APONEUROSI'
+                    ]
+                },
+                {
+                    key: 'Cornea',
+                    questions: [
+                        '11.60 - TRAPIANTO DI CORNEA, NON ALTRIMENTI SPECIFICATO',
+                        '11.64 - ALTRA CHERATOPLASTICA PERFORANTE OMOLOGA',
+                        '11.69 - ALTRO TRAPIANTO DELLA CORNEA',
+                        '11.39 - ALTRA ASPORTAZIONE DELLO PTERIGIUM'
+                    ]
+                },
+                {
+                    key: 'Orbita e Congiuntiva',
+                    questions: [
+                        '16.42 - ENUCLEAZIONE DEL BULBO OCULARE CON ALTRO IMPIANTO CONTEMPORANEO',
+                        '15.3 - INTERVENTI SU DUE O PIÙ MUSCOLI EXTRAOCULARI CHE RICHIEDONO DISTACCO TEMPORANEO DAL BULBO, UNO O ENTRAMBI GLI OCCHI',
+                        '15.11 - ARRETRAMENTO DI UN MUSCOLO EXTRAOCULARE',
+                        '10.21_2 - BIOPSIA DELLA CONGIUNTIVA - OCCHIO DX',
+                        '10.32 - DEMOLIZIONE DI LESIONE DELLA CONGIUNTIVA',
+                        '15.3 - INTERVENTI SU DUE O PIÙ MUSCOLI EXTRAOCULARI CHE RICHIEDONO DISTACCO TEMPORANEO DAL BULBO, UNO O ENTRAMBI GLI OCCHI',
+                        '16.22 - ASPIRAZIONE DIAGNOSTICA DELL/ORBITA',
+                        '12.89 - ALTRI INTERVENTI SULLA SCLERA',
+                        '10.32 - DEMOLIZIONE DI LESIONE DELLA CONGIUNTIVA',
+                        '10.21_3 - BIOPSIA DELLA CONGIUNTIVA - OCCHIO SX',
+                        '12.89 - ALTRI INTERVENTI SULLA SCLERA'
+                    ]
+                }
+            ]
+        };
+        const MAX_SCORES = {};
+        for (const reparto in COMPETENCE_DATA) {
+            let totalQuestions = 0;
+            COMPETENCE_DATA[reparto].forEach(area => {
+                totalQuestions += area.questions.length;
+            });
+            MAX_SCORES[reparto] = totalQuestions * 4;
+        }
+
+        const ALL_REPARTI = Object.keys(COMPETENCE_DATA);
+        const data = loadData();
+        let currentReparto = ALL_REPARTI[0] || 'Chirurgia Generale';
+        let selectedNurseId = null;
+        let isEditing = false;
+
+        function getCurrentCompetences() {
+            if (!currentReparto) return [];
+            if (!COMPETENCE_DATA[currentReparto]) return [];
+            return COMPETENCE_DATA[currentReparto];
+        }
+
+        function getCurrentMaxScore() {
+            return MAX_SCORES[currentReparto] || 4;
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            const loaded = raw ? JSON.parse(raw) : {};
+
+            ALL_REPARTI.forEach(reparto => {
+                if (!loaded[reparto]) {
+                    loaded[reparto] = {
+                        infermieri: [],
+                        competenze: []
+                    };
+                }
+
+                if (
+                    COMPETENCE_DATA[reparto] &&
+                    (!loaded[reparto].competenze || loaded[reparto].competenze.length === 0)
+                ) {
+                    loaded[reparto].competenze = COMPETENCE_DATA[reparto].map(area => ({
+                        title: area.key,
+                        items: area.questions.map(q => ({ text: q, values: [1, 2, 3, 4] }))
+                    }));
+                }
+            });
+
+            return loaded;
+        }
+
+        // ELEMENTI DOM 
+
+        const nursesList = document.getElementById('nursesList');
+        const nurseCard = document.getElementById('nurseCard');
+        const competenceContainer = document.getElementById('competenceContainer');
+        const summaryScore = document.getElementById('summaryScore');
+        const summaryLevel = document.getElementById('summaryLevel');
+        const summaryDetails = document.getElementById('summaryDetails');
+        const detailedLevels = document.getElementById('detailedLevels');
+        const currentRepartoEl = document.getElementById('currentReparto');
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        let radarChart = null;
+
+        const modalNurse = document.getElementById('modalNurse');
+        const modalTitle = document.getElementById('modalTitle');
+        const inputNome = document.getElementById('inputNome');
+        const inputCognome = document.getElementById('inputCognome');
+        const inputEsperienza = document.getElementById('inputEsperienza');
+        const inputMatricola = document.getElementById('inputMatricola');
+        const inputRuolo = document.getElementById('inputRuolo');
+        const inputValutatore = document.getElementById('inputValutatore');
+        const inputReparto = document.getElementById('inputReparto');
+
+        const competenceModal = document.getElementById('competenceModal');
+        const modalContentContainer = document.getElementById('modalContentContainer');
+
+        function openModal() {
+            competenceModal.classList.remove('hidden');
+            modalContentContainer.classList.remove('scale-95', 'opacity-0');
+            modalContentContainer.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeModal() {
+            modalContentContainer.classList.add('scale-95', 'opacity-0');
+            modalContentContainer.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                competenceModal.classList.add('hidden');
+            }, 150);
+        }
+
+        window.closeModal = closeModal;
+
+        // ====================== LOCAL STORAGE ONLY ======================
+
+        
+
+     
+        // Restituisce TUTTI i dati dal localStorage
+        
+        function apiLoadAll() {
+            console.log("📦 apiLoadAll → localStorage");
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : {};
+        }
+
+        //Salva TUTTA la struttura dati
+       
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            console.log("💾 Dati salvati in localStorage");
+        }
+
+        
+         //Salva solo il reparto passato
+         
+        function apiSaveReparto(reparto, payload) {
+            if (!reparto) return;
+
+            const allData = apiLoadAll();
+
+            allData[reparto] = {
+                infermieri: payload?.infermieri ?? []
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+            console.log(`💾 [LOCAL] Reparto ${reparto} salvato`);
+        }
+
+        //syncFromServer
+         
+        function syncFromServer() {
+            console.log("🔄 syncFromServer → local init");
+
+            const stored = apiLoadAll();
+            let changed = false;
+
+            for (const reparto of ALL_REPARTI) {
+                if (!stored[reparto]) {
+                    stored[reparto] = { infermieri: [] };
+                    changed = true;
+                }
+            }
+
+            //  aggiorna data SENZA riassegnarla
+            Object.keys(stored).forEach(key => {
+                data[key] = stored[key];
+            });
+
+            if (changed) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                console.log("📦 Reparti inizializzati");
+            }
+
+            renderNurses();
+        }
+
+
+        //  saveCurrentRepartoToServer
+        
+        function saveCurrentRepartoToServer() {
+            if (!currentReparto || !data[currentReparto]) return;
+            apiSaveReparto(currentReparto, data[currentReparto]);
+        }
+
+        
+        // ====================== CSV IMPORT ======================
+        document.getElementById("csvImport").addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (!currentReparto || !data[currentReparto]) {
+                alert("⚠️ Seleziona prima un reparto dall'elenco a sinistra.");
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = async function (e) {
+                const text = e.target.result;
+                let separator = ";";
+                if (text.includes("\t")) separator = "\t";
+                if (text.includes(",")) separator = ",";
+
+                const rows = text
+                    .split("\n")
+                    .map(r => r.trim())
+                    .filter(r => r.length > 0);
+
+                const header = rows[0]
+                    .split(separator)
+                    .map(h => h.trim().toLowerCase().replace(/\s+/g, ""));
+
+                const parsed = rows.slice(1).map(r => {
+                    const values = r.split(separator);
+                    const obj = {};
+                    header.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
+                    return obj;
+                });
+
+                parsed.forEach(p => {
+                    const nome = p["nome"] || p["name"] || "";
+                    const cognome = p["cognome"] || p["surname"] || "";
+                    const ruolo = p["competenza"] || p["ruolo"] || "";
+                    const specialita = p["specialita"] || "";
+                    const anni = p["anniservizio"] || "";
+                    const interventi = p["interventi"] || "";
+                    const matricola = p["matricola"] || "";
+
+                    if (!nome && !cognome) return;
+
+                    data[currentReparto].infermieri.push({
+                        id: uid(),
+                        nome,
+                        cognome,
+                        ruolo,
+                        specialita,
+                        esperienza: anni,
+                        interventi,
+                        matricola,
+                        reparto: currentReparto,
+                        valutazioni: [],
+                        ultimaValutazione: null
+                    });
+                });
+
+                saveData();
+                renderNurses();
+                await saveCurrentRepartoToServer();
+                alert("CSV importato correttamente!");
+            };
+
+            reader.readAsText(file, "UTF-8");
+        });
+
+        // ====================== RENDERING ======================
+        function renderNurses() {
+            nursesList.innerHTML = "";
+            const list = data[currentReparto]?.infermieri || [];
+
+            if (list.length === 0) {
+                nursesList.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-gray-500 py-3">
+                            Nessun infermiere nel reparto ${currentReparto}
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            list.forEach(n => {
+                const tr = document.createElement("tr");
+                tr.className = `cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 ${
+                    n.id === selectedNurseId ? "bg-blue-100 dark:bg-gray-600" : ""
+                }`;
+
+                tr.innerHTML = `
+                    <td class="px-3 py-2">${n.nome || "-"}</td>
+                    <td class="px-3 py-2">${n.cognome || "-"}</td>
+                    <td class="px-3 py-2">${n.ruolo || "-"}</td>
+                    <td class="px-3 py-2">${n.specialita || "-"}</td>
+                    <td class="px-3 py-2">${n.esperienza || "-"}</td>
+                    <td class="px-3 py-2">${n.interventi || "-"}</td>
+                `;
+
+                tr.addEventListener("click", () => {
+                    selectNurse(n.id);
+                    renderNurses();
+                });
+
+                nursesList.appendChild(tr);
+            });
+        }
+
+        function renderCompetences() {
+            competenceContainer.innerHTML = '';
+            const comps = getCurrentCompetences().map(area => ({
+                title: area.key,
+                items: area.questions.map(q => ({ text: q, values: [1, 2, 3, 4] }))
+            }));
+
+            comps.forEach((sec, sIdx) => {
+                const uniqueId = `sec_${currentReparto.replace(/\s/g, '_')}_${sIdx}`;
+                const secWrap = document.createElement('div');
+                secWrap.className = 'border rounded p-3 bg-white/50 dark:bg-gray-800 transition-all';
+
+                const header = document.createElement('div');
+                header.className = 'flex items-center justify-between cursor-pointer';
+                header.innerHTML = `
+                    <h4 class='font-semibold'>${sec.title}</h4>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="${uniqueId}_toggle" class="sr-only competence-toggle">
+                            <div class="block bg-gray-600 w-10 h-6 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+                        </div>
+                    </label>
+                `;
+
+                const list = document.createElement('div');
+                list.className = 'mt-4 space-y-4 hidden competence-list';
+                list.id = `${uniqueId}_list`;
+
+                sec.items.forEach((it, iIdx) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'border-b pb-2';
+                    questionDiv.innerHTML = `<p class='font-medium text-sm mb-2'>${it.text}</p>`;
+
+                    const radioGroup = document.createElement('div');
+                    radioGroup.className = 'flex gap-4 justify-between text-xs';
+
+                    it.values.forEach(val => {
+                        const radioId = `r_${currentReparto.replace(/\s/g, '_')}_${sIdx}_${iIdx}_${val}`;
+                        const radioName = `radio_${currentReparto.replace(/\s/g, '_')}_${sIdx}_${iIdx}`;
+
+                        const label = document.createElement('label');
+                        label.className = 'flex items-center gap-1 cursor-pointer';
+                        label.innerHTML = `
+                            <input type='radio' id='${radioId}' name='${radioName}'
+                                   data-section='${sIdx}' data-item='${iIdx}' data-value='${val}'
+                                   class='competenza-radio' disabled>
+                            <span>${val}</span>
+                        `;
+                        radioGroup.appendChild(label);
+                    });
+
+                    questionDiv.appendChild(radioGroup);
+                    list.appendChild(questionDiv);
+                });
+
+                secWrap.appendChild(header);
+                secWrap.appendChild(list);
+                competenceContainer.appendChild(secWrap);
+
+                const toggleInput = document.getElementById(`${uniqueId}_toggle`);
+                const radioInputs = list.querySelectorAll('.competenza-radio');
+
+                toggleInput.addEventListener('change', (e) => {
+                    const isChecked = e.target.checked;
+                    list.classList.toggle('hidden', !isChecked);
+                    secWrap.classList.toggle('bg-white/50', !isChecked);
+                    secWrap.classList.toggle('bg-blue-50/70', isChecked);
+
+                    radioInputs.forEach(radio => {
+                        radio.disabled = !isChecked;
+                        if (!isChecked) radio.checked = false;
+                    });
+                    updateScores();
+                });
+            });
+
+            document.querySelectorAll('.competenza-radio')
+                .forEach(rb => rb.addEventListener('change', updateScores));
+        }
+
+        function updateNurseCard() {
+            if (!selectedNurseId) {
+                nurseCard.innerHTML = 'Nessun infermiere selezionato';
+                document.getElementById('btnEditNurse').classList.add('hidden');
+                document.getElementById('btnDeleteNurse').classList.add('hidden');
+                return;
+            }
+            const n = data[currentReparto].infermieri.find(x => x.id === selectedNurseId);
+            if (!n) return;
+
+            nurseCard.innerHTML = `
+                <div class='font-medium text-lg'>${n.nome} ${n.cognome}</div>
+                <div class='text-sm text-gray-600'>${n.ruolo || '-'} | Matricola: ${n.matricola || '-'}</div>
+                <div class='text-sm mt-2'>Esperienza: ${n.esperienza || '-'} anni</div>
+                <div class='text-sm mt-2 text-gray-500'>
+                    Ultima valutazione: ${
+                        n.ultimaValutazione && n.ultimaValutazione.reparto === currentReparto
+                            ? n.ultimaValutazione.data
+                            : 'Mai (o in altro reparto)'
+                    }
+                </div>
+            `;
+            document.getElementById('btnEditNurse').classList.remove('hidden');
+            document.getElementById('btnDeleteNurse').classList.remove('hidden');
+        }
+
+        function selectReparto(name) {
+            currentReparto = name;
+            currentRepartoEl.textContent = name;
+            document.querySelectorAll('.reparto-btn').forEach(b => {
+                b.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+                if (b.dataset.reparto === name) {
+                    b.classList.add('bg-blue-100', 'dark:bg-blue-900');
+                }
+            });
+
+            selectedNurseId = null;
+            updateNurseCard();
+            renderNurses();
+            renderCompetences();
+            resetScores();
+        }
+
+        function selectNurse(id) {
+            selectedNurseId = id;
+            updateNurseCard();
+            loadNurseEvaluation();
+            renderNurses();
+        }
+
+        function openNurseModal(edit = false) {
+            isEditing = edit;
+            modalNurse.classList.remove('hidden');
+            modalNurse.classList.add('flex');
+            if (edit && selectedNurseId) {
+                const n = data[currentReparto].infermieri.find(x => x.id === selectedNurseId);
+                modalTitle.textContent = 'Modifica infermiere';
+                inputNome.value = n.nome;
+                inputCognome.value = n.cognome;
+                inputEsperienza.value = n.esperienza || '';
+                inputMatricola.value = n.matricola || '';
+                inputRuolo.value = n.ruolo || '';
+                inputValutatore.value = n.valutatore || '';
+                inputReparto.value = n.reparto || currentReparto;
+            } else {
+                modalTitle.textContent = 'Aggiungi infermiere';
+                inputNome.value = '';
+                inputCognome.value = '';
+                inputEsperienza.value = '';
+                inputMatricola.value = '';
+                inputRuolo.value = '';
+                inputValutatore.value = '';
+                inputReparto.value = currentReparto;
+            }
+        }
+
+        function closeNurseModal() {
+            modalNurse.classList.add('hidden');
+            modalNurse.classList.remove('flex');
+        }
+
+        // ================== VALUTAZIONE / PUNTEGGI ==================
+
+        function computeSectionScores() {
+            const comps = COMPETENCE_DATA[currentReparto] || [];
+            const scores = [];
+            const sectionDetails = [];
+            const itemDetails = [];
+
+            comps.forEach((s, sIdx) => {
+                let sum = 0;
+                let answeredQuestions = 0;
+                const radioGroupNamePrefix = `radio_${currentReparto.replace(/\s/g, '_')}_${sIdx}_`;
+                const toggleId = `sec_${currentReparto.replace(/\s/g, '_')}_${sIdx}_toggle`;
+                const isSectionActive = document.getElementById(toggleId)?.checked || false;
+
+                const currentSectionItems = [];
+
+                s.questions.forEach((item, iIdx) => {
+                    const radioName = `${radioGroupNamePrefix}${iIdx}`;
+                    const selectedRadio = document.querySelector(`input[name='${radioName}']:checked`);
+                    let value = 0;
+                    let levelText = 'Non risposto';
+
+                    if (isSectionActive && selectedRadio) {
+                        value = Number(selectedRadio.dataset.value || 0);
+                        sum += value;
+                        answeredQuestions++;
+                        levelText = scoreToLevelText(value);
+                    } else if (!isSectionActive) {
+                        levelText = 'Non Valutato';
+                    }
+
+                    currentSectionItems.push({
+                        question: item,
+                        score: value,
+                        level: levelText
+                    });
+                });
+
+                itemDetails.push({ key: s.key, questions: currentSectionItems });
+
+                const totalQuestions = s.questions.length;
+                const averageScore = isSectionActive && answeredQuestions > 0
+                    ? sum / answeredQuestions
+                    : 0;
+
+                const groupLevelText = isSectionActive && answeredQuestions > 0
+                    ? scoreToLevelText(averageScore)
+                    : (isSectionActive ? 'Non Completo' : 'Non Valutato');
+
+                scores.push(sum);
+                sectionDetails.push({
+                    key: s.key,
+                    score: sum,
+                    level: groupLevelText,
+                    questionsCount: totalQuestions,
+                    answeredCount: answeredQuestions,
+                    average: averageScore
+                });
+            });
+
+            return { scores, sectionDetails, itemDetails };
+        }
+
+        function updateScores() {
+            const { scores, sectionDetails, itemDetails } = computeSectionScores();
+
+            // Calcolo totale
+            const total = scores.reduce((a, b) => a + b, 0);
+            summaryScore.textContent = `Punteggio totale: ${total}`;
+
+            // Livello complessivo
+            const validSections = sectionDetails.filter(s => s.answeredCount > 0);
+            const avgScore = validSections.length
+                ? validSections.reduce((a, s) => a + s.average, 0) / validSections.length
+                : 0;
+
+            const levelText = validSections.length ? scoreToLevelText(avgScore) : "-";
+            summaryLevel.textContent = `Livello complessivo: ${levelText}`;
+
+            // ★ COLORA IL LIVELLO COMPLESSIVO
+            const lvl = Math.ceil(avgScore);
+            const colorMap = {
+                1: "#ef4444", // rosso
+                2: "#f97316", // arancione
+                3: "#eab308", // giallo
+                4: "#22c55e"  // verde
+            };
+            summaryLevel.style.color = colorMap[lvl] || "inherit";
+
+            // Pulisce il riepilogo
+            summaryDetails.innerHTML = "";
+
+            // Mostra solo domande risposte
+            itemDetails.forEach(area => {
+                area.questions.forEach(q => {
+                    if (q.score > 0) {
+                        const div = document.createElement("div");
+                        div.className = "mb-3 p-2 border-b";
+
+                        const levelColor = colorMap[q.score] || "#000";
+
+                        div.innerHTML = `
+                    <div><b>Domanda:</b> ${q.question}</div>
+                    <div><b>Livello:</b>
+                        <span style="color:${levelColor}; font-weight:bold;">
+                            ${q.level}
+                        </span>
+                    </div>
+                    <div><b>Punteggio:</b> ${q.score} / 4</div>
+                `;
+
+                        summaryDetails.appendChild(div);
+                    }
+                });
+            });
+
+            if (summaryDetails.innerHTML.trim() === "") {
+                summaryDetails.innerHTML = `
+            <p class="text-gray-500">Nessuna competenza valutata.</p>
+        `;
+            }
+
+            // Radar chart
+            if (radarChart) radarChart.destroy();
+
+            const labels = sectionDetails.map(s => s.key);
+            const averages = sectionDetails.map(s => s.average || 0);
+
+            radarChart = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Livello medio',
+                        data: averages,
+                        borderColor: "#3b82f6",
+                        backgroundColor: "rgba(59,130,246,0.3)"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 4,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function resetScores() {
+            summaryScore.textContent = 'Punteggio totale: 0';
+            summaryLevel.textContent = 'Livello complessivo: -';
+            summaryDetails.innerHTML = '';
+            detailedLevels.innerHTML = '';
+
+            document.querySelectorAll('.competenza-radio').forEach(r => r.checked = false);
+            document.querySelectorAll('.competence-toggle').forEach(t => {
+                t.checked = false;
+                const listId = t.id.replace('_toggle', '_list');
+                const list = document.getElementById(listId);
+                if (list) list.classList.add('hidden');
+            });
+
+            if (radarChart) {
+                radarChart.destroy();
+                radarChart = null;
+            }
+        }
+
+        function loadNurseEvaluation() {
+            resetScores();
+            if (!selectedNurseId) return;
+            const nurse = data[currentReparto].infermieri.find(x => x.id === selectedNurseId);
+            if (!nurse || !nurse.ultimaValutazione || nurse.ultimaValutazione.reparto !== currentReparto) return;
+
+            const val = nurse.ultimaValutazione;
+            (val.activeToggles || []).forEach(tid => {
+                const t = document.getElementById(tid);
+                if (t) {
+                    t.checked = true;
+                    const listId = tid.replace('_toggle', '_list');
+                    const list = document.getElementById(listId);
+                    if (list) list.classList.remove('hidden');
+                    const radios = list.querySelectorAll('.competenza-radio');
+                    radios.forEach(r => r.disabled = false);
+                }
+            });
+
+            (val.selections || []).forEach(sel => {
+                const { sectionIndex, itemIndex, value } = sel;
+                const radioName = `radio_${currentReparto.replace(/\s/g, '_')}_${sectionIndex}_${itemIndex}`;
+                const radio = document.querySelector(
+                    `input[name='${radioName}'][data-value='${value}']`
+                );
+                if (radio) radio.checked = true;
+            });
+
+            updateScores();
+        }
+
+        // ================== EVENTI UI ==================
+
+        document.getElementById('btnAddNurseLeft').addEventListener('click', () => openNurseModal(false));
+        document.getElementById('btnEditNurse').addEventListener('click', () => {
+            if (!selectedNurseId) { alert('Seleziona un infermiere'); return; }
+            openNurseModal(true);
+        });
+        document.getElementById('modalCancel').addEventListener('click', closeNurseModal);
+
+        document.getElementById('modalSave').addEventListener('click', async () => {
+            const nome = inputNome.value.trim();
+            const cognome = inputCognome.value.trim();
+            if (!nome || !cognome) { alert('Nome e cognome obbligatori'); return; }
+            const repartoValue = inputReparto.value.trim() || currentReparto;
+
+            if (!data[repartoValue]) {
+                data[repartoValue] = {
+                    infermieri: [],
+                    competenze: COMPETENCE_DATA[repartoValue]
+                        ? COMPETENCE_DATA[repartoValue].map(area => ({
+                            title: area.key,
+                            items: area.questions.map(q => ({ text: q, values: [1, 2, 3, 4] }))
+                        }))
+                        : []
+                };
+            }
+
+            if (isEditing && selectedNurseId) {
+                const oldReparto = data[currentReparto].infermieri.find(x => x.id === selectedNurseId)?.reparto || currentReparto;
+                if (oldReparto !== repartoValue) {
+                    data[oldReparto].infermieri = data[oldReparto].infermieri.filter(x => x.id !== selectedNurseId);
+                }
+
+                const infermieriList = data[repartoValue].infermieri;
+                let idx = infermieriList.findIndex(x => x.id === selectedNurseId);
+
+                if (idx !== -1) {
+                    infermieriList[idx] = {
+                        ...infermieriList[idx],
+                        nome, cognome,
+                        esperienza: inputEsperienza.value,
+                        matricola: inputMatricola.value,
+                        ruolo: inputRuolo.value,
+                        valutatore: inputValutatore.value,
+                        reparto: repartoValue
+                    };
+                } else {
+                    const n = {
+                        id: selectedNurseId,
+                        nome, cognome,
+                        esperienza: inputEsperienza.value,
+                        matricola: inputMatricola.value,
+                        ruolo: inputRuolo.value,
+                        valutatore: inputValutatore.value,
+                        reparto: repartoValue,
+                        valutazioni: [],
+                        ultimaValutazione: null
+                    };
+                    infermieriList.push(n);
+                }
+
+                saveData();
+                await apiSaveReparto(repartoValue, data[repartoValue]);
+                selectReparto(currentReparto);
+                selectNurse(selectedNurseId);
+                closeNurseModal();
+            } else {
+                const newN = {
+                    id: uid(),
+                    nome, cognome,
+                    esperienza: inputEsperienza.value,
+                    matricola: inputMatricola.value,
+                    ruolo: inputRuolo.value,
+                    valutatore: inputValutatore.value,
+                    reparto: repartoValue,
+                    valutazioni: [],
+                    ultimaValutazione: null
+                };
+                data[repartoValue].infermieri.push(newN);
+                saveData();
+                await apiSaveReparto(repartoValue, data[repartoValue]);
+                selectReparto(repartoValue);
+                selectNurse(newN.id);
+                closeNurseModal();
+            }
+        });
+
+        document.getElementById('btnDeleteNurse').addEventListener('click', async () => {
+            if (!selectedNurseId) return;
+            if (!confirm('Confermi eliminazione infermiere?')) return;
+            data[currentReparto].infermieri = data[currentReparto].infermieri
+                .filter(x => x.id !== selectedNurseId);
+            selectedNurseId = null;
+            saveData();
+            await saveCurrentRepartoToServer();
+            renderNurses();
+            updateNurseCard();
+            resetScores();
+        });
+
+        document.getElementById('btnStart').addEventListener('click', () => {
+            if (!selectedNurseId) { alert('Seleziona un infermiere prima di iniziare'); return; }
+            competenceContainer.classList.remove('opacity-50');
+            competenceContainer.classList.remove('pointer-events-none');
+            document.getElementById('instructions').textContent =
+                'Attiva le sezioni di interesse e seleziona un livello (1-4) per ogni domanda attiva.';
+            openModal();
+        });
+
+        document.getElementById('btnSaveEval').addEventListener('click', async () => {
+            if (!selectedNurseId) { alert('Seleziona infermiere'); return; }
+
+            const { scores, sectionDetails } = computeSectionScores();
+            const total = scores.reduce((a, b) => a + b, 0);
+            const nurse = data[currentReparto].infermieri.find(x => x.id === selectedNurseId);
+
+            const missingResponses = sectionDetails.filter((d, idx) => {
+                const toggleId = `sec_${currentReparto.replace(/\s/g, '_')}_${idx}_toggle`;
+                const isSectionActive = document.getElementById(toggleId)?.checked || false;
+                return isSectionActive && d.answeredCount < d.questionsCount;
+            });
+
+            if (missingResponses.length > 0) {
+                alert(`Attenzione: devi rispondere a TUTTE le domande nelle sezioni attivate.`);
+                return;
+            }
+
+            const selectedRadios = Array.from(document.querySelectorAll('.competenza-radio:checked')).map(rb => ({
+                sectionIndex: rb.dataset.section,
+                itemIndex: rb.dataset.item,
+                value: Number(rb.dataset.value)
+            }));
+
+            const activeToggles = Array.from(document.querySelectorAll('.competence-toggle:checked'))
+                .map(toggle => toggle.id);
+
+            const valutazione = {
+                data: new Date().toISOString(),
+                reparto: currentReparto,
+                sections: sectionDetails,
+                total,
+                selections: selectedRadios,
+                activeToggles
+            };
+
+            nurse.valutazioni = nurse.valutazioni || [];
+            const otherValuations = nurse.valutazioni.filter(v => v.reparto !== currentReparto);
+            nurse.valutazioni = [...otherValuations, valutazione];
+            nurse.ultimaValutazione = valutazione;
+
+            saveData();
+            await saveCurrentRepartoToServer();
+            updateNurseCard();
+            alert(`Valutazione salvata e sincronizzata sul server.`);
+        });
+
+        document.getElementById('btnExportAll').addEventListener('click', () => {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'valutazioni_all.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('btnExportJSON').addEventListener('click', () => {
+            if (!selectedNurseId) { alert('Seleziona infermiere'); return; }
+            const nurse = data[currentReparto].infermieri.find(x => x.id === selectedNurseId);
+            const blob = new Blob(
+                [JSON.stringify({ nurse, reparto: currentReparto }, null, 2)],
+                { type: 'application/json' }
+            );
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${nurse.nome}_${nurse.cognome}_valutazione.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('btnClearAll').addEventListener('click', () => {
+            if (!confirm('Svuotare tutti i dati locali? (non cancella il server)')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        });
+
+        document.getElementById('btnLivelli').addEventListener('click', () => {
+            if (!selectedNurseId) {
+                alert('Seleziona un infermiere prima di aprire i livelli di riferimento.');
+                return;
+            }
+            openModal();
+        });
+
+        document.querySelectorAll('.reparto-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectReparto(btn.dataset.reparto);
+            });
+        });
+
+        // ================== INIT ==================
+        (async function init() {
+            selectReparto(currentReparto);
+            renderNurses();
+            renderCompetences();
+            resetScores();
+            await syncFromServer();
+        })();</script>
+</body>
+</html>
