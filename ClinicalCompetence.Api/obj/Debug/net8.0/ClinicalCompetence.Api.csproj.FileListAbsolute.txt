@@ -1,0 +1,64 @@
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.csproj.AssemblyReference.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.GeneratedMSBuildEditorConfig.editorconfig
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.AssemblyInfoInputs.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.AssemblyInfo.cs
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.csproj.CoreCompileInputs.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.MvcApplicationPartsAssemblyInfo.cs
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.MvcApplicationPartsAssemblyInfo.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.sourcelink.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.staticwebassets.runtime.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.deps.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.runtimeconfig.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.pdb
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/Microsoft.OpenApi.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets.build.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets.development.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.ClinicalCompetence.Api.Microsoft.AspNetCore.StaticWebAssets.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.build.ClinicalCompetence.Api.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.ClinicalCompetence.Api.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.ClinicalCompetence.Api.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets.pack.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/scopedcss/bundle/ClinicalCompetence.Api.styles.css
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/Clinical.A0BCC700.Up2Date
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/refint/ClinicalCompetence.Api.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.pdb
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.genruntimeconfig.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet/ClinicalCompetence.Api/obj/Debug/net8.0/ref/ClinicalCompetence.Api.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.csproj.AssemblyReference.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.GeneratedMSBuildEditorConfig.editorconfig
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.AssemblyInfoInputs.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.AssemblyInfo.cs
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.csproj.CoreCompileInputs.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.MvcApplicationPartsAssemblyInfo.cs
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.MvcApplicationPartsAssemblyInfo.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.sourcelink.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/refint/ClinicalCompetence.Api.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.pdb
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.staticwebassets.runtime.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.deps.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.runtimeconfig.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/ClinicalCompetence.Api.pdb
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/Microsoft.OpenApi.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets.build.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets.development.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.ClinicalCompetence.Api.Microsoft.AspNetCore.StaticWebAssets.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.build.ClinicalCompetence.Api.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.ClinicalCompetence.Api.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.ClinicalCompetence.Api.props
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/staticwebassets.pack.json
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/scopedcss/bundle/ClinicalCompetence.Api.styles.css
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/Clinical.A0BCC700.Up2Date
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ClinicalCompetence.Api.genruntimeconfig.cache
+/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/obj/Debug/net8.0/ref/ClinicalCompetence.Api.dll
