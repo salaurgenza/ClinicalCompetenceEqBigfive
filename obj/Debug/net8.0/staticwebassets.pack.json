@@ -1,0 +1,33 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/catalog/competence-data.json",
+      "PackagePath": "staticwebassets/catalog/competence-data.json"
+    },
+    {
+      "Id": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/catalog/tools_export_catalog.js",
+      "PackagePath": "staticwebassets/catalog/tools_export_catalog.js"
+    },
+    {
+      "Id": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.ClinicalCompetence.Api.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.ClinicalCompetence.Api.props",
+      "PackagePath": "build\\ClinicalCompetence.Api.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.ClinicalCompetence.Api.props",
+      "PackagePath": "buildMultiTargeting\\ClinicalCompetence.Api.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.ClinicalCompetence.Api.props",
+      "PackagePath": "buildTransitive\\ClinicalCompetence.Api.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

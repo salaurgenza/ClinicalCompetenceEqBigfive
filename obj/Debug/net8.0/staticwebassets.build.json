@@ -1,0 +1,77 @@
+{
+  "Version": 1,
+  "Hash": "5glcn0cAULGyEiH1G84tdzK/Rly0hpzab/xeSLkdEwk=",
+  "Source": "ClinicalCompetence.Api",
+  "BasePath": "_content/ClinicalCompetence.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "ClinicalCompetence.Api/wwwroot",
+      "Source": "ClinicalCompetence.Api",
+      "ContentRoot": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/",
+      "BasePath": "_content/ClinicalCompetence.Api",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/catalog/competence-data.json",
+      "SourceId": "ClinicalCompetence.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/",
+      "BasePath": "_content/ClinicalCompetence.Api",
+      "RelativePath": "catalog/competence-data.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/catalog/competence-data.json"
+    },
+    {
+      "Identity": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/catalog/tools_export_catalog.js",
+      "SourceId": "ClinicalCompetence.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/",
+      "BasePath": "_content/ClinicalCompetence.Api",
+      "RelativePath": "catalog/tools_export_catalog.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/catalog/tools_export_catalog.js"
+    },
+    {
+      "Identity": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/index.html",
+      "SourceId": "ClinicalCompetence.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/stefanopepe/Downloads/ClinicalCompetence_IIS_Angular_DotNet copia/ClinicalCompetence.Api/wwwroot/",
+      "BasePath": "_content/ClinicalCompetence.Api",
+      "RelativePath": "index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/index.html"
+    }
+  ]
+}
